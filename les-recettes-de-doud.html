@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Les Recettes de Doud</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --cream: #F7F3EE;
+  --warm: #EDE5D8;
+  --terracotta: #C2613A;
+  --terracotta-light: #E8845F;
+  --brown: #3D2B1F;
+  --brown-mid: #6B4C3B;
+  --brown-light: #9C7B6A;
+  --green: #4A6741;
+  --text: #2A1F18;
+  --text-mid: #6B4C3B;
+  --text-light: #9C7B6A;
+  --white: #FFFDF9;
+  --border: rgba(61,43,31,0.12);
+}
+
+html { scroll-behavior: smooth; }
+body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); min-height: 100vh; }
+
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1rem 2rem;
+  background: rgba(247,243,238,0.92);
+  backdrop-filter: blur(8px);
+  border-bottom: 0.5px solid var(--border);
+}
+.nav-logo { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--brown); }
+.nav-links { display: flex; gap: 1.5rem; }
+.nav-links a { font-size: 13px; color: var(--text-mid); text-decoration: none; letter-spacing: 0.04em; text-transform: uppercase; cursor: pointer; }
+.nav-links a:hover { color: var(--terracotta); }
+
+/* PAGES */
+.page { display: none; }
+.page.active { display: block; }
+
+/* HERO */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 6rem 2rem 4rem; position: relative; overflow: hidden;
+}
+.hero-bg {
+  position: absolute; inset: 0; z-index: 0;
+  background: radial-gradient(ellipse 60% 50% at 20% 80%, rgba(194,97,58,0.12) 0%, transparent 60%),
+              radial-gradient(ellipse 50% 60% at 80% 20%, rgba(74,103,65,0.10) 0%, transparent 60%),
+              var(--cream);
+}
+.hero-content { position: relative; z-index: 1; max-width: 640px; }
+.hero-tag {
+  display: inline-block; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--terracotta); border: 0.5px solid var(--terracotta); padding: 5px 14px;
+  border-radius: 20px; margin-bottom: 1.5rem;
+}
+.hero h1 {
+  font-family: 'Playfair Display', serif; font-size: clamp(48px, 8vw, 80px);
+  font-weight: 400; line-height: 1.08; color: var(--brown); margin-bottom: 1rem;
+}
+.hero h1 em { font-style: italic; color: var(--terracotta); }
+.hero-sub { font-size: 16px; font-weight: 300; color: var(--text-mid); line-height: 1.7; margin-bottom: 2.5rem; }
+.hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.hero-stats { display: flex; gap: 3rem; justify-content: center; margin-top: 4rem; }
+.stat { text-align: center; }
+.stat-num { font-family: 'Playfair Display', serif; font-size: 32px; color: var(--brown); display: block; }
+.stat-label { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-light); }
+
+/* BUTTONS */
+.btn-primary {
+  padding: 12px 28px; background: var(--terracotta); color: var(--white);
+  border: none; border-radius: 40px; font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 500; cursor: pointer; transition: background 0.2s, transform 0.15s;
+}
+.btn-primary:hover { background: var(--terracotta-light); transform: translateY(-1px); }
+.btn-outline {
+  padding: 12px 28px; background: transparent; color: var(--brown);
+  border: 0.5px solid var(--brown-light); border-radius: 40px;
+  font-family: 'DM Sans', sans-serif; font-size: 14px; cursor: pointer; transition: all 0.2s;
+}
+.btn-outline:hover { border-color: var(--terracotta); color: var(--terracotta); transform: translateY(-1px); }
+
+/* BOOK */
+.page-inner { max-width: 900px; margin: 0 auto; padding: 6rem 2rem 4rem; }
+.page-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 2.5rem; flex-wrap: wrap; gap: 1rem; }
+.page-header h2 { font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 400; color: var(--brown); }
+.page-header p { font-size: 14px; color: var(--text-light); margin-top: 4px; }
+
+.filters { display: flex; gap: 8px; margin-bottom: 2rem; flex-wrap: wrap; }
+.filter-btn {
+  padding: 6px 16px; border-radius: 20px; border: 0.5px solid var(--border);
+  background: var(--white); font-family: 'DM Sans', sans-serif; font-size: 13px;
+  color: var(--text-mid); cursor: pointer; transition: all 0.15s;
+}
+.filter-btn:hover { border-color: var(--terracotta); color: var(--terracotta); }
+.filter-btn.active { background: var(--terracotta); color: var(--white); border-color: var(--terracotta); }
+
+.add-recipe-btn {
+  display: flex; align-items: center; gap: 8px; padding: 10px 20px;
+  border: 0.5px dashed var(--brown-light); border-radius: 12px; background: transparent;
+  font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text-mid);
+  cursor: pointer; transition: all 0.15s; margin-bottom: 2rem;
+}
+.add-recipe-btn:hover { border-color: var(--terracotta); color: var(--terracotta); background: rgba(194,97,58,0.04); }
+
+.recipe-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+.recipe-card {
+  background: var(--white); border: 0.5px solid var(--border); border-radius: 16px;
+  padding: 1.25rem; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+.recipe-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(61,43,31,0.08); border-color: rgba(194,97,58,0.3); }
+.recipe-card h3 { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 400; color: var(--brown); margin-bottom: 6px; line-height: 1.3; }
+.recipe-card .card-meta { font-size: 12px; color: var(--text-light); }
+
+.cat-pill { display: inline-block; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; margin-bottom: 10px; font-weight: 500; }
+.cat-plats { background: rgba(74,103,65,0.12); color: var(--green); }
+.cat-entrees { background: rgba(194,97,58,0.10); color: var(--terracotta); }
+.cat-desserts { background: rgba(156,123,106,0.15); color: var(--brown-mid); }
+.cat-soupes { background: rgba(107,76,59,0.10); color: var(--brown-mid); }
+.cat-autres { background: rgba(61,43,31,0.08); color: var(--text-mid); }
+
+.empty-state { grid-column: 1/-1; text-align: center; padding: 4rem 2rem; color: var(--text-light); font-size: 15px; }
+.empty-state span { display: block; font-size: 48px; margin-bottom: 1rem; opacity: 0.3; }
+
+/* DETAIL */
+.detail-back { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-mid); cursor: pointer; margin-bottom: 2rem; text-transform: uppercase; letter-spacing: 0.06em; transition: color 0.15s; }
+.detail-back:hover { color: var(--terracotta); }
+.detail-header { margin-bottom: 2rem; }
+.detail-header h2 { font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 400; color: var(--brown); line-height: 1.15; margin: 0.5rem 0 0.75rem; }
+.detail-meta-row { display: flex; gap: 1.5rem; flex-wrap: wrap; font-size: 13px; color: var(--text-light); }
+.detail-divider { height: 0.5px; background: var(--border); margin: 2rem 0; }
+.detail-section-label { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--terracotta); font-weight: 500; margin-bottom: 1rem; }
+.detail-grid { display: grid; grid-template-columns: 1fr 1.6fr; gap: 3rem; align-items: start; }
+
+.ingredients-list { list-style: none; }
+.ingredients-list li { font-size: 15px; padding: 8px 0; border-bottom: 0.5px solid var(--border); display: flex; align-items: baseline; gap: 8px; }
+.ingredients-list li::before { content: ''; width: 4px; height: 4px; border-radius: 50%; background: var(--terracotta); flex-shrink: 0; margin-top: 6px; }
+.ingredients-list li:last-child { border-bottom: none; }
+
+.steps-list { list-style: none; counter-reset: steps; }
+.steps-list li { font-size: 15px; line-height: 1.7; padding: 8px 0 8px 3rem; border-bottom: 0.5px solid var(--border); position: relative; counter-increment: steps; }
+.steps-list li::before { content: counter(steps); position: absolute; left: 0; top: 8px; width: 24px; height: 24px; border-radius: 50%; background: var(--terracotta); color: white; font-size: 11px; font-weight: 500; display: flex; align-items: center; justify-content: center; }
+.steps-list li:last-child { border-bottom: none; }
+
+.notes-block { background: var(--warm); border-radius: 12px; padding: 10px 14px; font-size: 14px; color: var(--text-mid); line-height: 1.7; border-left: 2px solid var(--terracotta); margin-top: 8px; }
+.detail-actions { display: flex; gap: 10px; margin-top: 2.5rem; flex-wrap: wrap; }
+.btn-edit { padding: 10px 22px; background: var(--brown); color: var(--white); border: none; border-radius: 40px; font-family: 'DM Sans', sans-serif; font-size: 13px; cursor: pointer; }
+.btn-edit:hover { background: var(--brown-mid); }
+.btn-delete { padding: 10px 22px; background: transparent; color: var(--text-light); border: 0.5px solid var(--border); border-radius: 40px; font-family: 'DM Sans', sans-serif; font-size: 13px; cursor: pointer; }
+.btn-delete:hover { border-color: #c0392b; color: #c0392b; }
+
+/* FORM */
+.form-card { background: var(--white); border: 0.5px solid var(--border); border-radius: 20px; padding: 2rem; max-width: 640px; }
+.form-card h2 { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 400; color: var(--brown); margin-bottom: 1.5rem; }
+.field { margin-bottom: 1.25rem; }
+.field label { display: block; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-mid); margin-bottom: 6px; font-weight: 500; }
+.field input, .field select, .field textarea { width: 100%; padding: 10px 14px; background: var(--cream); border: 0.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text); outline: none; transition: border-color 0.15s; }
+.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--terracotta); }
+.field textarea { min-height: 100px; resize: vertical; line-height: 1.6; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.field-hint { font-size: 11px; color: var(--text-light); margin-top: 4px; }
+.form-actions { display: flex; gap: 10px; margin-top: 1.5rem; }
+
+@media (max-width: 640px) {
+  .detail-grid { grid-template-columns: 1fr; gap: 2rem; }
+  .hero-stats { gap: 2rem; }
+  .field-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Les Recettes de Doud</div>
+  <div class="nav-links">
+    <a onclick="showPage('home')">Accueil</a>
+    <a onclick="showPage('book')">Les recettes</a>
+  </div>
+</nav>
+
+<div id="page-home" class="page">
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <div class="hero-tag">Cuisine maison</div>
+      <h1>Les Recettes<br>de <em>Doud</em></h1>
+      <p class="hero-sub">Le plaisir de manger, assumé sans complexe.</p>
+      <div class="hero-actions">
+        <button class="btn-primary" onclick="showPage('book')">Voir les recettes</button>
+        <button class="btn-outline" onclick="showPage('form')">Ajouter une recette</button>
+      </div>
+      <div class="hero-stats">
+        <div class="stat">
+          <span class="stat-num" id="hero-count">0</span>
+          <span class="stat-label">Recettes</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num" id="hero-cats">0</span>
+          <span class="stat-label">Catégories</span>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div id="page-book" class="page">
+  <div class="page-inner">
+    <div class="page-header">
+      <div>
+        <h2>Les recettes</h2>
+        <p id="book-count"></p>
+      </div>
+    </div>
+    <div class="filters">
+      <button class="filter-btn active" onclick="filterCat('Toutes')">Toutes</button>
+      <button class="filter-btn" onclick="filterCat('Entrées')">Entrées</button>
+      <button class="filter-btn" onclick="filterCat('Plats')">Plats</button>
+      <button class="filter-btn" onclick="filterCat('Desserts')">Desserts</button>
+      <button class="filter-btn" onclick="filterCat('Soupes')">Soupes</button>
+      <button class="filter-btn" onclick="filterCat('Autres')">Autres</button>
+    </div>
+    <button class="add-recipe-btn" onclick="showPage('form')">+ Ajouter une recette</button>
+    <div class="recipe-grid" id="recipe-grid"></div>
+  </div>
+</div>
+
+<div id="page-detail" class="page">
+  <div class="page-inner">
+    <div class="detail-back" onclick="showPage('book')">← Retour</div>
+    <div class="detail-header">
+      <span class="cat-pill" id="d-badge"></span>
+      <h2 id="d-name"></h2>
+      <div class="detail-meta-row" id="d-meta"></div>
+    </div>
+    <div class="detail-divider"></div>
+    <div class="detail-grid">
+      <div>
+        <div class="detail-section-label">Ingrédients</div>
+        <ul class="ingredients-list" id="d-ingredients"></ul>
+      </div>
+      <div>
+        <div class="detail-section-label">Préparation</div>
+        <ol class="steps-list" id="d-steps"></ol>
+        <div id="d-notes-wrap" style="display:none; margin-top:2rem;">
+          <div class="detail-section-label">Notes & astuces</div>
+          <div class="notes-block" id="d-notes"></div>
+        </div>
+      </div>
+    </div>
+    <div class="detail-actions">
+      <button class="btn-edit" onclick="editCurrentRecipe()">Modifier</button>
+      <button class="btn-delete" onclick="deleteCurrentRecipe()">Supprimer</button>
+    </div>
+  </div>
+</div>
+
+<div id="page-form" class="page">
+  <div class="page-inner">
+    <div class="detail-back" onclick="cancelForm()">← Retour</div>
+    <div class="form-card">
+      <h2 id="form-title">Nouvelle recette</h2>
+      <div class="field">
+        <label>Nom de la recette</label>
+        <input type="text" id="f-name" placeholder="Ex : Gratin dauphinois">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Catégorie</label>
+          <select id="f-cat">
+            <option value="Entrées">Entrées</option>
+            <option value="Plats" selected>Plats</option>
+            <option value="Desserts">Desserts</option>
+            <option value="Soupes">Soupes</option>
+            <option value="Autres">Autres</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Portions</label>
+          <input type="text" id="f-portions" placeholder="Ex : 4 personnes">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Temps de préparation</label>
+          <input type="text" id="f-prep" placeholder="Ex : 20 min">
+        </div>
+        <div class="field">
+          <label>Temps de cuisson</label>
+          <input type="text" id="f-cook" placeholder="Ex : 45 min">
+        </div>
+      </div>
+      <div class="field">
+        <label>Ingrédients</label>
+        <textarea id="f-ingredients" placeholder="Un ingrédient par ligne"></textarea>
+        <div class="field-hint">Un ingrédient par ligne</div>
+      </div>
+      <div class="field">
+        <label>Étapes</label>
+        <textarea id="f-steps" placeholder="Une étape par ligne"></textarea>
+        <div class="field-hint">Une étape par ligne</div>
+      </div>
+      <div class="field">
+        <label>Notes & astuces <span style="font-weight:300;text-transform:none;letter-spacing:0">(optionnel)</span></label>
+        <textarea id="f-notes"></textarea>
+      </div>
+      <div class="form-actions">
+        <button class="btn-primary" onclick="saveRecipe()">Enregistrer</button>
+        <button class="btn-outline" onclick="cancelForm()">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+var RECIPES = [
+  {
+    id: "r1",
+    name: "Boulettes sauce lapin",
+    cat: "Plats",
+    portions: "",
+    prep: "30 min",
+    cook: "55 min",
+    ingredients: [
+      "--- Boulettes ---",
+      "1 kg de haché (porc et boeuf)",
+      "2 oeufs",
+      "300g de chapelure",
+      "2-3 échalotes",
+      "2 branches de persil",
+      "15 cl de lait",
+      "Sel, poivre, muscade",
+      "--- Sauce ---",
+      "3 oignons",
+      "1 bière brune",
+      "50g de cassonade",
+      "2 c.à.s. de sirop de Liège",
+      "1-2 feuilles de laurier",
+      "1 L de bouillon",
+      "10 cl de vinaigre de vin blanc"
+    ],
+    steps: [
+      "Préchauffer le four à 180°C.",
+      "Mettre le haché dans un bol. Couper les échalotes et le persil finement. Mélanger tous les ingrédients des boulettes ensemble.",
+      "Former des boulettes de 100g et les faire cuire au four 35 minutes.",
+      "Pour la sauce : couper les oignons en lamelles et les faire dorer dans une cocotte.",
+      "Ajouter un peu d'eau, déglacer avec le vinaigre.",
+      "Ajouter le litre de bouillon, le sirop de Liège, la cassonade et le laurier.",
+      "Ajouter la moitié de la bière et laisser mijoter 20 minutes.",
+      "Ajouter le reste de la bière et faire un roux. Incorporer le roux à la sauce pour lier.",
+      "Ajouter les boulettes dans la sauce et laisser mijoter encore quelques minutes avant de servir."
+    ],
+    notes: "Une recette typiquement belge ! Le sirop de Liège est essentiel pour l'authenticité. Excellent avec des frites ou de la purée."
+  },
+  {
+    id: "r2",
+    name: "Gâteau au chocolat",
+    cat: "Desserts",
+    portions: "",
+    prep: "",
+    cook: "20 min",
+    ingredients: [
+      "250g de chocolat noir",
+      "250g de sucre fin",
+      "150g de beurre salé",
+      "150g de farine",
+      "4 oeufs",
+      "Une pincée de fleur de sel"
+    ],
+    steps: [
+      "Faire fondre le chocolat et le beurre dans une casserole.",
+      "Quand c'est fondu, ajouter le sucre et mélanger.",
+      "Ajouter la farine et mélanger.",
+      "Quand c'est refroidi, ajouter les oeufs entiers.",
+      "Faire cuire au four 20 min à 180°C."
+    ],
+    notes: "Ustensiles : moule à gâteau, grand plat pour mélanger, fouet, lèche-plat, balance."
+  },
+  {
+    id: "r3",
+    name: "Pasta alla calabrese",
+    cat: "Plats",
+    portions: "4 personnes",
+    prep: "10 min",
+    cook: "20 min",
+    ingredients: [
+      "400g de pâtes (rigatoni ou penne)",
+      "100g de nduja (saucisse calabraise épicée)",
+      "400g de tomates pelées en boîte",
+      "2 gousses d'ail",
+      "80g de ricotta",
+      "40g de pecorino râpé",
+      "3 c.à.s. d'huile d'olive",
+      "1 c.à.c. de sel",
+      "6 feuilles de basilic frais"
+    ],
+    steps: [
+      "Dans une grande poêle, faire chauffer l'huile d'olive. Ajouter les gousses d'ail écrasées et la nduja. Faire revenir 2-3 minutes à feu moyen en écrasant la nduja à la spatule — elle va fondre et colorer l'huile en rouge.",
+      "Ajouter les tomates pelées en les écrasant à la main. Saler. Laisser mijoter 15 minutes à feu doux jusqu'à ce que la sauce épaississe.",
+      "Cuire les pâtes dans une grande casserole d'eau bouillante salée (al dente). Réserver une tasse d'eau de cuisson avant d'égoutter.",
+      "Ajouter les pâtes égouttées dans la sauce. Mélanger en ajoutant un peu d'eau de cuisson si besoin. Incorporer la ricotta en petites cuillerées et mélanger délicatement.",
+      "Répartir dans les assiettes. Parsemer de pecorino râpé et de basilic frais. Servir immédiatement."
+    ],
+    notes: "La nduja se trouve en épicerie italienne ou en ligne. À défaut, remplace-la par du chorizo doux + une pincée de piment. Plus tu laisses mijoter la sauce, plus elle sera intense."
+  },
+  {
+    id: "r4",
+    name: "Soupe aux carottes",
+    cat: "Soupes",
+    portions: "4 personnes",
+    prep: "15 min",
+    cook: "25 min",
+    ingredients: [
+      "5-6 grosses carottes",
+      "1 oignon",
+      "1 cube de bouillon de légumes",
+      "1 c.à.c. de cumin",
+      "Sel, poivre",
+      "1 filet d'huile d'olive",
+      "1 pomme de terre (optionnel, pour plus de gourmandise)"
+    ],
+    steps: [
+      "Éplucher et couper les carottes en rondelles. Émincer l'oignon. Si tu veux plus de gourmandise, éplucher et couper la pomme de terre en cubes.",
+      "Dans une grande casserole, faire revenir l'oignon avec un filet d'huile d'olive à feu moyen pendant 3-4 minutes jusqu'à ce qu'il soit translucide.",
+      "Ajouter les carottes (et la pomme de terre si tu l'utilises). Couvrir d'eau à hauteur et ajouter le cube de bouillon.",
+      "Porter à ébullition puis laisser mijoter 20-25 minutes jusqu'à ce que les carottes soient bien tendres.",
+      "Mixer le tout jusqu'à obtenir une soupe lisse et veloutée. Assaisonner avec le cumin, le sel et le poivre.",
+      "Servir bien chaud. Tu peux ajouter un filet de crème fraîche ou quelques graines de courge pour la déco."
+    ],
+    notes: "Le cumin est la clé de cette soupe — il lui donne tout son caractère. La pomme de terre la rend plus épaisse et veloutée. Pour une version encore plus gourmande, ajoute une noix de beurre au moment de mixer."
+  }
+];
+
+var currentFilter = "Toutes";
+var currentId = null;
+var editingId = null;
+
+function catClass(cat) {
+  var m = { "Entrées": "cat-entrees", "Plats": "cat-plats", "Desserts": "cat-desserts", "Soupes": "cat-soupes", "Autres": "cat-autres" };
+  return m[cat] || "cat-autres";
+}
+
+function showPage(page) {
+  document.querySelectorAll(".page").forEach(function(p) { p.classList.remove("active"); });
+  document.getElementById("page-" + page).classList.add("active");
+  window.scrollTo(0, 0);
+  if (page === "home") updateStats();
+  if (page === "book") renderGrid();
+}
+
+function updateStats() {
+  document.getElementById("hero-count").textContent = RECIPES.length;
+  var cats = {};
+  RECIPES.forEach(function(r) { cats[r.cat] = 1; });
+  document.getElementById("hero-cats").textContent = Object.keys(cats).length;
+}
+
+function filterCat(cat) {
+  currentFilter = cat;
+  document.querySelectorAll(".filter-btn").forEach(function(b) {
+    b.classList.toggle("active", b.textContent === cat);
+  });
+  renderGrid();
+}
+
+function renderGrid() {
+  var grid = document.getElementById("recipe-grid");
+  var filtered = currentFilter === "Toutes" ? RECIPES.slice() : RECIPES.filter(function(r) { return r.cat === currentFilter; });
+  filtered.sort(function(a, b) { return a.name.localeCompare(b.name, "fr"); });
+
+  var total = RECIPES.length;
+  document.getElementById("book-count").textContent = total === 0 ? "Aucune recette" : total === 1 ? "1 recette" : total + " recettes";
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div class="empty-state"><span>🍳</span>' + (currentFilter === "Toutes" ? "Commence par ajouter ta première recette !" : "Aucune recette dans cette catégorie.") + "</div>";
+    return;
+  }
+
+  grid.innerHTML = filtered.map(function(r) {
+    var meta = [r.portions, r.prep ? r.prep + " prép." : "", r.cook ? r.cook + " cuisson" : ""].filter(Boolean).join(" · ");
+    return '<div class="recipe-card" onclick="showDetail(\'' + r.id + '\')">'
+      + '<span class="cat-pill ' + catClass(r.cat) + '">' + r.cat + '</span>'
+      + '<h3>' + r.name + '</h3>'
+      + '<div class="card-meta">' + meta + '</div>'
+      + '</div>';
+  }).join("");
+}
+
+function showDetail(id) {
+  var r = RECIPES.find(function(x) { return x.id === id; });
+  if (!r) { showPage("book"); return; }
+  currentId = id;
+
+  document.getElementById("d-badge").textContent = r.cat;
+  document.getElementById("d-badge").className = "cat-pill " + catClass(r.cat);
+  document.getElementById("d-name").textContent = r.name;
+
+  var parts = [];
+  if (r.portions) parts.push("🍽 " + r.portions);
+  if (r.prep) parts.push("⏱ " + r.prep + " de préparation");
+  if (r.cook) parts.push("🔥 " + r.cook + " de cuisson");
+  document.getElementById("d-meta").textContent = parts.join("  ·  ");
+
+  document.getElementById("d-ingredients").innerHTML = (r.ingredients || []).map(function(i) { return "<li>" + i + "</li>"; }).join("") || "<li>Aucun ingrédient renseigné</li>";
+  document.getElementById("d-steps").innerHTML = (r.steps || []).map(function(s) { return "<li>" + s + "</li>"; }).join("") || "<li>Aucune étape renseignée</li>";
+
+  if (r.notes) {
+    document.getElementById("d-notes-wrap").style.display = "block";
+    document.getElementById("d-notes").textContent = r.notes;
+  } else {
+    document.getElementById("d-notes-wrap").style.display = "none";
+  }
+
+  showPage("detail");
+}
+
+function editCurrentRecipe() {
+  var r = RECIPES.find(function(x) { return x.id === currentId; });
+  if (!r) return;
+  editingId = currentId;
+  document.getElementById("form-title").textContent = "Modifier la recette";
+  document.getElementById("f-name").value = r.name || "";
+  document.getElementById("f-cat").value = r.cat || "Plats";
+  document.getElementById("f-portions").value = r.portions || "";
+  document.getElementById("f-prep").value = r.prep || "";
+  document.getElementById("f-cook").value = r.cook || "";
+  document.getElementById("f-ingredients").value = (r.ingredients || []).join("\n");
+  document.getElementById("f-steps").value = (r.steps || []).join("\n");
+  document.getElementById("f-notes").value = r.notes || "";
+  showPage("form");
+}
+
+function deleteCurrentRecipe() {
+  if (!confirm("Supprimer cette recette ?")) return;
+  RECIPES = RECIPES.filter(function(x) { return x.id !== currentId; });
+  currentId = null;
+  showPage("book");
+}
+
+function cancelForm() {
+  editingId = null;
+  if (currentId) showDetail(currentId);
+  else showPage("book");
+}
+
+function saveRecipe() {
+  var name = document.getElementById("f-name").value.trim();
+  if (!name) { alert("Donne un nom à ta recette !"); return; }
+  var r = {
+    id: editingId || ("r" + Date.now()),
+    name: name,
+    cat: document.getElementById("f-cat").value,
+    portions: document.getElementById("f-portions").value.trim(),
+    prep: document.getElementById("f-prep").value.trim(),
+    cook: document.getElementById("f-cook").value.trim(),
+    ingredients: document.getElementById("f-ingredients").value.split("\n").map(function(s) { return s.trim(); }).filter(Boolean),
+    steps: document.getElementById("f-steps").value.split("\n").map(function(s) { return s.trim(); }).filter(Boolean),
+    notes: document.getElementById("f-notes").value.trim()
+  };
+  if (editingId) {
+    var idx = RECIPES.findIndex(function(x) { return x.id === editingId; });
+    if (idx !== -1) RECIPES[idx] = r;
+  } else {
+    RECIPES.push(r);
+  }
+  currentId = r.id;
+  editingId = null;
+  showDetail(r.id);
+}
+
+showPage("home");
+</script>
+</body>
+</html>
